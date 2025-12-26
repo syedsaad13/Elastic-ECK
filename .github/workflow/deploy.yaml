@@ -19,7 +19,7 @@ jobs:
         token: ${{ secrets.DO_TOKEN }}
 
     - name: Save kubeconfig
-      run: doctl kubernetes cluster kubeconfig save <your-cluster-name-or-id>
+      run: doctl kubernetes cluster kubeconfig save k8s-1-34-1-do-2-nyc1-1766710319506
 
     - name: Deploy Elasticsearch and Kibana
       run: |
