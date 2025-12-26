@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'elasticsearch/**'
+      - 'elasticsearch/elasticsearch.yaml'
 
 jobs:
   deploy:
