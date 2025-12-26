@@ -3,12 +3,17 @@ kind: Elasticsearch
 metadata:
   name: es-quickstart
 spec:
-  version: 9.2.3  # Latest as of Dec 2025
+  version: 8.15.0
   nodeSets:
-  - name: master-data  # Master-eligible + data (3 for quorum if you can; start with 1-2 for testing)
-    count: 2           # Increase to 3 later for true HA
+  - name: ingest
+    count: 1
     config:
-      node.roles: ["master", "data", "ingest"]  # Optional: include ingest here if needed
+      node.roles: ["master", "ingest"]  # Master-eligible + ingest
+    volumeClaimTemplates: []  # No persistent storage needed for ingest
+  - name: data
+    count: 2
+    config:
+      node.roles: ["master", "data"]  # Master-eligible + data
     volumeClaimTemplates:
     - metadata:
         name: elasticsearch-data
@@ -18,46 +23,3 @@ spec:
         resources:
           requests:
             storage: 20Gi
-    podTemplate:
-      spec:
-        containers:
-        - name: elasticsearch
-          resources:
-            limits:
-              memory: 4Gi
-              cpu: 2
-
-  - name: ingest-dedicated
-    count: 1
-    config:
-      node.roles: ["ingest"]  # Pure ingest – no data/storage needed
-    podTemplate:
-      spec:
-        containers:
-        - name: elasticsearch
-          resources:
-            limits:
-              memory: 2Gi
-              cpu: 1
-
-  - name: data-dedicated  # Optional extra pure data nodes
-    count: 1
-    config:
-      node.roles: ["data"]
-    volumeClaimTemplates:
-    - metadata:
-        name: elasticsearch-data
-      spec:
-        accessModes:
-        - ReadWriteOnce
-        resources:
-          requests:
-            storage: 30Gi
-    podTemplate:
-      spec:
-        containers:
-        - name: elasticsearch
-          resources:
-            limits:
-              memory: 4Gi
-              cpu: 2

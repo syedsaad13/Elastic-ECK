@@ -1,9 +1,8 @@
-name: Deploy ELK Stack (ECK)
+name: Deploy ELK with ECK
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
     paths:
       - 'k8s/**'
 
@@ -11,31 +10,24 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DO_TOKEN }}
+    - name: Install doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ secrets.DO_TOKEN }}
 
-      - name: Save DigitalOcean kubeconfig
-        run: |
-          doctl kubernetes cluster kubeconfig save ${{ secrets.CLUSTER_NAME }}
+    - name: Save kubeconfig
+      run: doctl kubernetes cluster kubeconfig save <your-cluster-name-or-id>
 
-      - name: Verify kubectl access
-        run: kubectl get nodes
+    - name: Deploy Elasticsearch and Kibana
+      run: |
+        kubectl apply -f k8s/elasticsearch.yaml
+        kubectl apply -f k8s/kibana.yaml
 
-      - name: Deploy Elasticsearch & Kibana
-        run: |
-          kubectl apply -f k8s/elasticsearch.yaml
-          kubectl apply -f k8s/kibana.yaml
+    - name: Wait for Elasticsearch ready
+      run: kubectl wait --for=condition=Ready elasticsearch/es-quickstart --timeout=10m
 
-      - name: Wait for Elasticsearch to be Ready
-        run: kubectl wait --for=condition=Ready elasticsearch/es-quickstart --timeout=10m
-
-      - name: Wait for Kibana to be Ready
-        run: kubectl wait --for=condition=Ready kibana/kb-quickstart --timeout=5m
-
-      - name: Success message
-        run: echo "🚀 ELK Stack deployed successfully!"
+    - name: Wait for Kibana ready
+      run: kubectl wait --for=condition=Ready kibana/kb-quickstart --timeout=5m
