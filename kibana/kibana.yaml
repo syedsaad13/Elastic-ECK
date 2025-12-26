@@ -1,0 +1,9 @@
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kb-quickstart
+spec:
+  version: 8.15.0  # Match Elasticsearch version
+  count: 1
+  elasticsearchRef:
+    name: es-quickstart

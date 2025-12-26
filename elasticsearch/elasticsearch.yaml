@@ -1,0 +1,18 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: es-quickstart
+spec:
+  version: 8.15.0  # Use the latest stable Elastic Stack version
+  nodeSets:
+  - name: default
+    count: 1  # Single node for learning
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi  # Adjust based on your node size
