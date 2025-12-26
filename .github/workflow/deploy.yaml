@@ -1,0 +1,45 @@
+name: Deploy ELK Stack (ECK)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'k8s/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DO_TOKEN }}
+
+      - name: Save DigitalOcean kubeconfig
+        run: doctl kubernetes cluster kubeconfig save ${{ secrets.CLUSTER_NAME }} --set-current-context=true
+
+      - name: Verify kubectl access
+        run: kubectl get nodes || echo "Error: Check DO_TOKEN or CLUSTER_NAME secrets"
+
+      - name: Deploy Elasticsearch & Kibana
+        run: |
+          kubectl apply -f k8s/elasticsearch.yaml
+          kubectl apply -f k8s/kibana.yaml
+
+      - name: Wait for Elasticsearch to be Ready
+        run: kubectl wait --for=condition=Ready elasticsearch/es-quickstart --timeout=10m || echo "Elasticsearch not ready - check logs"
+
+      - name: Wait for Kibana to be Ready
+        run: kubectl wait --for=condition=Ready kibana/kb-quickstart --timeout=5m || echo "Kibana not ready - check logs"
+
+      - name: Log Elasticsearch Status
+        if: always()
+        run: kubectl describe elasticsearch es-quickstart
+
+      - name: Success message
+        if: success()
+        run: echo "🚀 ELK Stack deployed successfully!"
