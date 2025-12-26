@@ -28,8 +28,8 @@ jobs:
 
       - name: Deploy Elasticsearch & Kibana
         run: |
-          kubectl apply -f k8s/elasticsearch.yaml
-          kubectl apply -f k8s/kibana.yaml
+          kubectl apply -f elasticsearch/elasticsearch.yaml
+          kubectl apply -f kibana/kibana.yaml
 
       - name: Wait for Elasticsearch to be Ready
         run: kubectl wait --for=condition=Ready elasticsearch/es-quickstart --timeout=10m
