@@ -3,7 +3,11 @@ kind: Kibana
 metadata:
   name: kb-quickstart
 spec:
-  version: 8.15.0  # Match Elasticsearch version
+  version: 8.15.0
   count: 1
   elasticsearchRef:
     name: es-quickstart
+  http:
+    service:
+      spec:
+        type: LoadBalancer  # This creates a public IP on DigitalOcean
