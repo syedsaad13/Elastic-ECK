@@ -20,10 +20,11 @@ jobs:
           token: ${{ secrets.DO_TOKEN }}
 
       - name: Save DigitalOcean kubeconfig
-        run: doctl kubernetes cluster kubeconfig save ${{ secrets.CLUSTER_NAME }} --set-current-context=true
+        run: |
+          doctl kubernetes cluster kubeconfig save ${{ secrets.CLUSTER_NAME }}
 
       - name: Verify kubectl access
-        run: kubectl get nodes || echo "Error: Check DO_TOKEN or CLUSTER_NAME secrets"
+        run: kubectl get nodes
 
       - name: Deploy Elasticsearch & Kibana
         run: |
@@ -31,15 +32,10 @@ jobs:
           kubectl apply -f k8s/kibana.yaml
 
       - name: Wait for Elasticsearch to be Ready
-        run: kubectl wait --for=condition=Ready elasticsearch/es-quickstart --timeout=10m || echo "Elasticsearch not ready - check logs"
+        run: kubectl wait --for=condition=Ready elasticsearch/es-quickstart --timeout=10m
 
       - name: Wait for Kibana to be Ready
-        run: kubectl wait --for=condition=Ready kibana/kb-quickstart --timeout=5m || echo "Kibana not ready - check logs"
-
-      - name: Log Elasticsearch Status
-        if: always()
-        run: kubectl describe elasticsearch es-quickstart
+        run: kubectl wait --for=condition=Ready kibana/kb-quickstart --timeout=5m
 
       - name: Success message
-        if: success()
         run: echo "🚀 ELK Stack deployed successfully!"
