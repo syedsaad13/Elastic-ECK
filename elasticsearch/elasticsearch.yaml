@@ -3,12 +3,34 @@ kind: Elasticsearch
 metadata:
   name: es-quickstart
 spec:
-  version: 8.15.0
+  version: 9.2.3  # Latest as of Dec 2025
   nodeSets:
-  - name: master
-    count: 3                     # 3 master-eligible nodes for quorum (recommended for real setups)
+  - name: master-data  # Master-eligible + data (3 for quorum if you can; start with 1-2 for testing)
+    count: 2           # Increase to 3 later for true HA
     config:
-      node.roles: ["master"]
+      node.roles: ["master", "data", "ingest"]  # Optional: include ingest here if needed
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 20Gi
+    podTemplate:
+      spec:
+        containers:
+        - name: elasticsearch
+          resources:
+            limits:
+              memory: 4Gi
+              cpu: 2
+
+  - name: ingest-dedicated
+    count: 1
+    config:
+      node.roles: ["ingest"]  # Pure ingest – no data/storage needed
     podTemplate:
       spec:
         containers:
@@ -18,21 +40,8 @@ spec:
               memory: 2Gi
               cpu: 1
 
-  - name: ingest
-    count: 1                     # Your dedicated ingest node
-    config:
-      node.roles: ["ingest"]
-    podTemplate:
-      spec:
-        containers:
-        - name: elasticsearch
-          resources:
-            limits:
-              memory: 2Gi
-              cpu: 1
-
-  - name: data
-    count: 2                     # Two data nodes
+  - name: data-dedicated  # Optional extra pure data nodes
+    count: 1
     config:
       node.roles: ["data"]
     volumeClaimTemplates:
@@ -43,7 +52,7 @@ spec:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 20Gi         # Adjust based on your DOKS node size
+            storage: 30Gi
     podTemplate:
       spec:
         containers:
