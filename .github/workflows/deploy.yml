@@ -26,16 +26,11 @@ jobs:
       - name: Verify kubectl access
         run: kubectl get nodes
 
-      - name: Deploy Elasticsearch & Kibana
+      - name: Deploy Elasticsearch & Kibana & Fleet-server
         run: |
           kubectl apply -f elasticsearch/elasticsearch.yaml
           kubectl apply -f kibana/kibana.yaml
-
-      - name: Wait for Elasticsearch to be Ready
-        run: kubectl wait --for=condition=Ready elasticsearch/es-quickstart --timeout=10m
-
-      - name: Wait for Kibana to be Ready
-        run: kubectl wait --for=condition=Ready kibana/kb-quickstart --timeout=5m
+          kubectl apply -f fleet-server/fleet-server.yaml
 
       - name: Success message
         run: echo "🚀 ELK Stack deployed successfully!"

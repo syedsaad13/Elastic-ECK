@@ -6,12 +6,12 @@ spec:
   version: 8.15.0
   nodeSets:
   - name: ingest
-    count: 2
+    count: 1
     config:
       node.roles: ["master", "ingest"]  # Master-eligible + ingest
     volumeClaimTemplates: []  # No persistent storage needed for ingest
   - name: data
-    count: 2
+    count: 1
     config:
       node.roles: ["master", "data"]  # Master-eligible + data
     volumeClaimTemplates:
