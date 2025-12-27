@@ -30,7 +30,7 @@ jobs:
         run: |
           kubectl apply -f elasticsearch/elasticsearch.yaml
           kubectl apply -f kibana/kibana.yaml
-          kubectl apply -f fleet-server/fleet-server.yaml
+          kubectl apply -f elasticsearch/fleet-server/fleet-server.yaml
 
       - name: Success message
         run: echo "🚀 ELK Stack deployed successfully!"

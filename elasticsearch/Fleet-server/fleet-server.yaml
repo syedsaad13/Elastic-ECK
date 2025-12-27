@@ -6,9 +6,9 @@ metadata:
 spec:
   version: 8.19.9
   kibanaRef:
-    name: kibana-quickstart
+    name: kb-quickstart
   elasticsearchRefs:
-  - name: elasticsearch-quickstart
+  - name: es-quickstart
   mode: fleet
   fleetServerEnabled: true
   deployment:
