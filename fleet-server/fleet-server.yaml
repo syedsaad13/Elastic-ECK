@@ -39,7 +39,7 @@ spec:
   daemonSet:
     podTemplate:
       spec:
-        serviceAccountName: elastic-agent
+        serviceAccountName: es-quickstart-es-elastic-user 
         automountServiceAccountToken: true
         securityContext:
           runAsUser: 0
