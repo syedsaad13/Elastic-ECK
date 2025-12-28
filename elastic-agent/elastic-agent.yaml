@@ -2,24 +2,24 @@ apiVersion: agent.k8s.elastic.co/v1alpha1
 kind: Agent
 metadata:
   name: cluster-agent
-  namespace: default  # Same namespace as your Fleet Server
+  namespace: default  # Same as your Fleet Server
 spec:
   version: 8.15.1  # Must match your stack version exactly
   kibanaRef:
     name: kb-quickstart
-  elasticsearchRefs:
-    - name: es-quickstart
-  mode: fleet
   fleetServerRef:
-    name: fleet-server  # References your existing Fleet Server Agent
-  # No fleetServerEnabled: true here → this is a normal agent
-  daemonSet:  # Use DaemonSet to run one agent pod per node (recommended for infra monitoring)
+    name: fleet-server  # References your working Fleet Server Agent
+  mode: fleet
+  # fleetServerEnabled: true  ← Do NOT include this (false by default)
+  # No elasticsearchRefs! ← Remove entirely for normal agents
+
+  daemonSet:  # Runs one pod per node – perfect for infra/K8s monitoring
     podTemplate:
       spec:
         automountServiceAccountToken: true
         securityContext:
-          runAsUser: 0  # Needed for host access in quickstarts
-        # Optional: hostPath volumes for host metrics/logs
+          runAsUser: 0  # Required in quickstarts for hostPath access
+        # Optional: Add host volumes if you want host logs/metrics
         # volumes:
         # - name: varlog
         #   hostPath:
@@ -27,3 +27,4 @@ spec:
         # - name: varlibdocker
         #   hostPath:
         #     path: /var/lib/docker/containers
+        # volumeMounts in container added automatically by integrations
