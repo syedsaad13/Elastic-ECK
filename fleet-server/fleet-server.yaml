@@ -25,23 +25,21 @@ apiVersion: agent.k8s.elastic.co/v1alpha1
 kind: Agent
 metadata:
   name: elastic-agent
-  namespace: default
+  namespace: default  # Or whatever namespace you're using
 spec:
-  version: 8.15.0
+  version: 8.15.0  # Must match ES/Kibana exactly, e.g., 8.16.1
   kibanaRef:
     name: kb-quickstart
-  elasticsearchRefs:
-    - name: es-quickstart
   fleetServerRef:
-    name: fleet-server  # Connects agents to the Fleet Server above
+    name: fleet-server  # Matches the name of your Fleet Server Agent
   mode: fleet
-  policyID: eck-agent  # Default agent policy
-  daemonSet:
+  policyID: eck-agent  # Default policy; ECK will create it
+  daemonSet:  # Or 'deployment' if you prefer
     podTemplate:
       spec:
-        serviceAccountName: es-quickstart-es-elastic-user 
+        serviceAccountName: elastic-agent
         automountServiceAccountToken: true
         securityContext:
-          runAsUser: 0
-        hostNetwork: true  # Optional but recommended for better Kubernetes metadata collection
+          runAsUser: 0  # Required for hostPath persistence
+        hostNetwork: true  # Recommended for Kubernetes integration
         dnsPolicy: ClusterFirstWithHostNet
