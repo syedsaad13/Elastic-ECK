@@ -30,6 +30,7 @@ jobs:
         run: |
           kubectl apply -f elasticsearch/elasticsearch.yaml
           kubectl apply -f kibana/kibana.yaml
+          kubectl apply -f fleet-server/fleet-server.yaml
           
 
       - name: Success message
