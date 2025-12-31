@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: fleet-server-ingress
-  namespace: default  # Same namespace as your Fleet Server Agent
+  namespace: elastic-system  # Same namespace as your Fleet Server Agent
   annotations:
     # For NGINX Ingress (adjust if using a different controller)
     kubernetes.io/ingress.class: nginx
@@ -11,7 +11,7 @@ metadata:
     # Optional: For better security with cert-manager/Let's Encrypt, remove ssl-passthrough and add tls section below
 spec:
   rules:
-    - host: fleet.yourdomain.com  # Replace with your domain
+    - host: fleet.sasa.com  # Replace with your domain
       http:
         paths:
           - path: /
