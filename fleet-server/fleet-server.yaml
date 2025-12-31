@@ -2,21 +2,20 @@ apiVersion: agent.k8s.elastic.co/v1alpha1
 kind: Agent
 metadata:
   name: fleet-server
-  namespace: elastic-system  # Change if your Elasticsearch/Kibana are in another namespace
+  namespace: elastic-system  # Must match ES and Kibana namespace
 spec:
-  version: 8.15.1  # MUST exactly match your Elasticsearch and Kibana version
+  version: 8.15.1  # EXACT match with your ES/Kibana version
   kibanaRef:
-    name: kb-quickstart  # Name of your Kibana resource
+    name: kb-quickstart
   elasticsearchRefs:
-    - name: es-quickstart  # Name of your Elasticsearch resource
+    - name: es-quickstart
   mode: fleet
   fleetServerEnabled: true
   deployment:
     replicas: 1
     podTemplate:
       spec:
-        serviceAccountName: fleet-server  # Recommended; ECK creates this SA automatically
         automountServiceAccountToken: true
         securityContext:
-          runAsUser: 0
+          runAsUser: 0  # Required for many integrations
           
