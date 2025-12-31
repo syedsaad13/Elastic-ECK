@@ -1,17 +1,13 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: kibana-ingress
+  name: elastic-ingress
   namespace: elastic-system
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-    nginx.ingress.kubernetes.io/secure-backends: "true"      # Force HTTPS to backend
-    nginx.ingress.kubernetes.io/proxy-ssl-verify: "false"   # Ignore ECK self-signed cert
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"   # Passthrough for both
 spec:
-  tls:  # <-- This is the key addition (empty is fine for now)
-    - hosts:
-        - kibana.sasa.com
   rules:
     - host: kibana.sasa.com
       http:
@@ -23,3 +19,13 @@ spec:
                 name: kb-quickstart-kb-http
                 port:
                   number: 5601
+    - host: fleet.sasa.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: fleet-server-agent-http
+                port:
+                  number: 8220
