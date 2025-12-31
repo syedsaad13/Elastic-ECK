@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kibana-ingress
+  namespace: elastic-system  # Same namespace as your Kibana (kb-quickstart)
+  annotations:
+    kubernetes.io/ingress.class: nginx  # For NGINX Ingress Controller
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"  # Kibana uses HTTPS internally
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"     # Pass TLS through to Kibana (handles self-signed certs)
+spec:
+  rules:
+    - host: kibana.sasa.com  # Replace with your domain
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kb-quickstart-kb-http  # Auto-created service: <kibana-name>-kb-http
+                port:
+                  number: 5601
+  # Optional: For proper TLS termination (with valid cert via cert-manager)
+  # tls:
+  #   - hosts:
+  #       - kibana.yourdomain.com
+  #     secretName: kibana-tls-secret  # Cert-manager creates this
