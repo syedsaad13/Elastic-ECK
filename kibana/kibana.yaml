@@ -8,7 +8,3 @@ spec:
   count: 1
   elasticsearchRef:
     name: es-quickstart
-  http:
-    service:
-      spec:
-        type: LoadBalancer  # This creates a public IP on DigitalOcean
