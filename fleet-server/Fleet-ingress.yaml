@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fleet-server-ingress
+  namespace: default  # Same namespace as your Fleet Server Agent
+  annotations:
+    # For NGINX Ingress (adjust if using a different controller)
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"  # Important: Fleet uses HTTPS internally
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"    # Passes TLS to the backend (avoids termination issues with self-signed certs)
+    # Optional: For better security with cert-manager/Let's Encrypt, remove ssl-passthrough and add tls section below
+spec:
+  rules:
+    - host: fleet.yourdomain.com  # Replace with your domain
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: fleet-server-agent-http  # Auto-created service name: <agent-name>-agent-http
+                port:
+                  number: 8220
+  # Optional: TLS termination at Ingress (requires valid cert)
+  # tls:
+  #   - hosts:
+  #       - fleet.yourdomain.com
+  #     secretName: fleet-tls-secret  # Create via cert-manager
